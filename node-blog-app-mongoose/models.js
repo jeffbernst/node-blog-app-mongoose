@@ -5,12 +5,15 @@ const mongoose = require('mongoose');
 const blogPostSchema = mongoose.Schema({
   title: { type: String, required: true },
   content: { type: String, required: true },
-  author: { type: String, required: true },
+  author: {
+    firstName: String,
+    lastName: String
+  },
   date: { type: Date, default: Date.now }
 });
 
 blogPostSchema.virtual('authorName').get(function() {
-  return `${this.author}`.trim();
+  return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
 blogPostSchema.methods.serialize = function() {
@@ -18,7 +21,10 @@ blogPostSchema.methods.serialize = function() {
     id: this._id,
     title: this.title,
     content: this.content,
-    author: this.author,
+    author: {
+      firstName: this.author.firstName,
+      lastName: this.author.lastName
+    },
     date: this.date
   };
 };
