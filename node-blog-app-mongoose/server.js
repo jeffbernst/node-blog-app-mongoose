@@ -28,7 +28,7 @@ app.get('/posts', (req, res) => {
 
 app.get('/posts/:id', (req, res) => {
   BlogPost.findById(req.params.id)
-    .then(blogPost => res.json(restaurant.serialize()))
+    .then(blogPost => res.json(blogPost.serialize()))
     .catch(err => {
       console.error(err);
       res.status(500).json({ message: 'Internal server error' });
@@ -51,7 +51,7 @@ app.post('/posts', (req, res) => {
     title: req.body.title,
     content: req.body.content,
     author: req.body.author,
-    date: req.body.date
+    created: req.body.created
   })
     .then(blogPost => res.status(201).json(blogPost.serialize()))
     .catch(err => {
@@ -70,7 +70,7 @@ app.put('/posts/:id', (req, res) => {
   }
 
   const toUpdate = {};
-  const updateableFields = ['name', 'content', 'author'];
+  const updateableFields = ['title', 'content', 'author'];
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -78,8 +78,8 @@ app.put('/posts/:id', (req, res) => {
     }
   });
 
-  BlogPost.findByIdAndUpdate(req.params.id, { $set: toUpdate })
-    .then(blogPost => res.status(204).end())
+  BlogPost.findByIdAndUpdate(req.params.id, { $set: toUpdate }, { new: true })
+    .then(blogPost => res.status(200).json(blogPost.serialize()))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
